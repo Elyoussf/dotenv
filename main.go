@@ -10,9 +10,11 @@ import (
 
 	"github.com/Elyoussf/dotenvparser/dotenvlocator"
 	"github.com/Elyoussf/dotenvparser/linehandler"
+	"github.com/Elyoussf/dotenvparser/multiline"
 )
 
 func main() {
+	MultilineMode := true
 	currDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal("Error getting current directory:", err)
@@ -31,9 +33,13 @@ func main() {
 
 		scanner := bufio.NewScanner(file)
 		result := make(map[string]string)
-
+		lines := []string{}
 		for scanner.Scan() {
 			line := strings.TrimSpace(scanner.Text())
+			if MultilineMode {
+				lines = append(lines, line)
+				continue
+			}
 			if line == "" || strings.HasPrefix(line, "#") {
 				continue
 			}
@@ -48,7 +54,9 @@ func main() {
 				result[kv.Key] = kv.Val
 			}
 		}
-
+		if MultilineMode {
+			result = multiline.ReadSmartly(lines)
+		}
 		if err := scanner.Err(); err != nil {
 			log.Fatal("Error scanning the file:", err)
 		}
