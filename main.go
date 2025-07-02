@@ -39,10 +39,10 @@ func main() {
 			}
 			kv := linehandler.ReturnKeyVal(line)
 			if kv.Key != "" {
-				if kv.Key[0] == kv.Key[len(kv.Key)-1] && string(kv.Key[0]) == "\"" {
+				if kv.Key[0] == kv.Key[len(kv.Key)-1] && (string(kv.Key[0]) == "\"" || string(kv.Key[0]) == "'") {
 					kv.Key = kv.Key[1 : len(kv.Key)-1]
 				}
-				if kv.Val[0] == kv.Val[len(kv.Val)-1] && string(kv.Val[0]) == "\"" {
+				if kv.Val[0] == kv.Val[len(kv.Val)-1] && (string(kv.Val[0]) == "\"" || string(kv.Key[0]) == "'") {
 					kv.Val = kv.Val[1 : len(kv.Val)-1]
 				}
 				result[kv.Key] = kv.Val
@@ -60,5 +60,4 @@ func main() {
 
 		fmt.Println(string(jsonBytes))
 	}
-
 }
