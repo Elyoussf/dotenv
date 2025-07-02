@@ -6,38 +6,59 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
+	"github.com/Elyoussf/dotenvparser/dotenvlocator"
 	"github.com/Elyoussf/dotenvparser/linehandler"
 )
 
 func main() {
-	curr_dir, err := os.Getwd()
+	currDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal("error while getting the current dir")
+		log.Fatal("Error getting current directory:", err)
 	}
-	dotenvpath := curr_dir + "/.env"
-	file, err := os.Open(dotenvpath)
+
+	dotenvPath, err := dotenvlocator.LocateDotEnv(currDir, ".env")
 	if err != nil {
-		log.Fatal("Error Opening The file : ", err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	var result = make(map[string]string)
-	for scanner.Scan() {
-		line := scanner.Text()
-		keyval := linehandler.ReturnKeyVal(line)
-		if keyval.Key != "" {
-			result[keyval.Key] = keyval.Val
+		fmt.Println(err)
+
+	} else {
+		file, err := os.Open(dotenvPath)
+		if err != nil {
+			log.Fatal("Error opening the .env file:", err)
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		result := make(map[string]string)
+
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			kv := linehandler.ReturnKeyVal(line)
+			if kv.Key != "" {
+				if kv.Key[0] == kv.Key[len(kv.Key)-1] && string(kv.Key[0]) == "\"" {
+					kv.Key = kv.Key[1 : len(kv.Key)-1]
+				}
+				if kv.Val[0] == kv.Val[len(kv.Val)-1] && string(kv.Val[0]) == "\"" {
+					kv.Val = kv.Val[1 : len(kv.Val)-1]
+				}
+				result[kv.Key] = kv.Val
+			}
 		}
 
-	}
-	jsonBytes, err := json.MarshalIndent(result, "", " ")
+		if err := scanner.Err(); err != nil {
+			log.Fatal("Error scanning the file:", err)
+		}
 
-	if err != nil {
-		log.Fatal("Error Occured when trying to write Json")
+		jsonBytes, err := json.MarshalIndent(result, "", "  ")
+		if err != nil {
+			log.Fatal("Error encoding to JSON:", err)
+		}
+
+		fmt.Println(string(jsonBytes))
 	}
-	fmt.Println(string(jsonBytes))
-	if err := scanner.Err(); err != nil {
-		log.Fatal("error Scanning the file!")
-	}
+
 }
