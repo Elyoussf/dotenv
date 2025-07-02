@@ -14,6 +14,7 @@ func ReturnKeyVal(line string) KeyVal {
 	if !strings.Contains(line, "=") || (len(line) > 0 && strings.TrimSpace(string(line[0])) == "=") {
 		return KeyVal{}
 	}
+
 	parts := strings.SplitN(line, "=", 2)
 
 	if len(parts) == 1 {

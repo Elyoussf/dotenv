@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
@@ -20,14 +22,21 @@ func main() {
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
+	var result = make(map[string]string)
 	for scanner.Scan() {
 		line := scanner.Text()
 		keyval := linehandler.ReturnKeyVal(line)
 		if keyval.Key != "" {
-			log.Println(keyval)
+			result[keyval.Key] = keyval.Val
 		}
 
 	}
+	jsonBytes, err := json.MarshalIndent(result, "", " ")
+
+	if err != nil {
+		log.Fatal("Error Occured when trying to write Json")
+	}
+	fmt.Println(string(jsonBytes))
 	if err := scanner.Err(); err != nil {
 		log.Fatal("error Scanning the file!")
 	}
