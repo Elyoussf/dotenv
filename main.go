@@ -42,6 +42,14 @@ func main() {
 		lines := []string{}
 		for scanner.Scan() {
 			line := strings.TrimSpace(scanner.Text())
+			index := strings.IndexRune(line, '#')
+			if index != -1 {
+				line = line[:index]
+			}
+			if len(line) == 0 || string(line[0]) == "#" {
+				continue
+			}
+
 			if MultilineMode {
 				lines = append(lines, line)
 				continue
