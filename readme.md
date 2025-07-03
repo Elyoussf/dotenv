@@ -10,3 +10,8 @@ We're building **companion libraries for Python and Node.js** so developers can 
 
 ```bash
 go run . [state]
+### 🔧 Parameters
+
+* `state` → (optional) parsing mode:
+  * `true` → **Multiline values supported**
+  * `false` or omitted → **Multiline values NOT supported**
