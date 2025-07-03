@@ -6,9 +6,9 @@ class DotenvParser{
         this.binarypath = binarypath
     }
 
-    read(){
+    read(state){
         try{
-            const output = execFileSync(this.binarypath,{encoding : "utf-8"})
+            const output = execFileSync(this.binarypath,[state],{encoding : "utf-8"})
 
             try{
                 return JSON.parse(output)
@@ -22,6 +22,6 @@ class DotenvParser{
 }
 
 const reader = new DotenvParser();
-const env = reader.read();
+const env = reader.read("true");
 
 console.log(env);

@@ -14,7 +14,13 @@ import (
 )
 
 func main() {
-	MultilineMode := true
+	// if not specified it is not a multiline
+	// if it is and it is true it will be consider it multiline
+	// Otherwise willnot  be multiline
+	MultilineMode := false
+	if len(os.Args) >= 2 {
+		MultilineMode = strings.EqualFold(strings.ToUpper(os.Args[1]), strings.ToUpper("true"))
+	}
 	currDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal("Error getting current directory:", err)
