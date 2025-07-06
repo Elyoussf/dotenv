@@ -74,6 +74,9 @@ func main() {
 		if err := scanner.Err(); err != nil {
 			log.Fatal("Error scanning the file:", err)
 		}
+		// At this point i have a ready to output map that holds
+		// Key - val
+		// This where some values processing is done
 
 		jsonBytes, err := json.MarshalIndent(result, "", "  ")
 		if err != nil {
